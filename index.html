@@ -115,4 +115,24 @@ const rg=x=>lo===hi?fmt(lo):fmt(lo)+" – "+fmt(hi);
 h+=`<tr><td>${MODES[i]}</td><td>${rg()} J</td><td>${lo===hi?fmt(lo/TNT):fmt(lo/TNT)+" – "+fmt(hi/TNT)}</td><td>${r}</td><td>${tw}</td></tr>`});
 h+="</table></div>"}
 o.innerHTML=h;o.scrollIntoView({behavior:"smooth"})};
+(function(){
+  const btn=document.createElement("button");
+  btn.textContent="Mostrar tabla de J/cc";
+  const box=document.createElement("section");
+  box.className="card";box.hidden=true;
+  const f=v=>v===null?'<span class="na">No Aplica</span>'
+    :Array.isArray(v)?v[0]+" – "+v[1]:v;
+  let h='<div class="wrap"><table><tr><th>Material</th>'
+    +MODES.map(m=>"<th>"+m+" (J/cc)</th>").join("")+"</tr>";
+  for(const k in M){
+    h+="<tr><td>"+k+"</td>"+M[k].map(v=>"<td>"+f(v)+"</td>").join("")+"</tr>";}
+  box.innerHTML=h+"</table></div>";
+  btn.onclick=()=>{
+    box.hidden=!box.hidden;
+    btn.textContent=box.hidden?"Mostrar tabla de J/cc":"Ocultar tabla de J/cc";
+  };
+  const main=document.querySelector("main");
+  main.appendChild(btn);
+  main.appendChild(box);
+})();
 </script></body></html>
