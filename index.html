@@ -86,7 +86,12 @@ const MODES=["Fragmentar","Fragmentar violentamente","Pulverizar","Vaporizar"];
 const RANKS=[["Below Average Human",60],["Human",106],["Athlete",300],["Street",1.5e4],["Wall",2.092e7],["Small Building",1.046e9],["Building",8.368e9],["Large Building",4.6024e10],["City Block",4.184e11],["Multi-City Block",4.184e12],["Small Town",2.42672e13],["Town",4.184e14],["Large Town",4.184e15],["Small City",2.63592e16],["City",4.184e17],["Mountain",4.184e18],["Large Mountain",1.79912e19],["Island",4.184e20],["Large Island",4.184e21],["Small Country",2.9288e22],["Country",4.184e23],["Large Country",3.17984e24],["Continent",1.855604e25],["Multi-Continent",1.24e29],["Moon",1.81e30]];
 const TNT=4184000000;
 const $=id=>document.getElementById(id);
-const rank=j=>{for(const[n,m]of RANKS)if(j<=m)return n;return"Arriba de Semis"};
+const rIdx=j=>RANKS.findIndex(r=>j<=r[1]);
+const rank=j=>{const i=rIdx(j);return i<0?"Arriba de Semis":RANKS[i][0]};
+const LJ=[[600,"Liviano +"],[15000,"Liviano ++"],[150000,"Liviano +++"],[400000,"Liviano ++++"]];
+const LT=[["Wall","Mediano +"],["Small Building","Mediano ++"],["Building","Mediano +++"],["Large Building","Mediano ++++"],["Multi-City Block","Crucero +"],["Town","Crucero ++"],["Small City","Crucero +++"],["City","Crucero ++++"],["Island","Semis +"],["Country","Semis ++"],["Multi-Continent","Semis +++"],["Moon","Semis ++++"]];
+const LTi=LT.map(t=>[RANKS.findIndex(r=>r[0]===t[0]),t[1]]);
+const tier=j=>{for(const[m,t]of LJ)if(j<=m)return t;const i=rIdx(j);if(i<0)return"Arriba de Semis";return LTi.find(t=>t[0]>=i)[1]};
 const fmt=x=>(x!==0&&(Math.abs(x)>=1e9||Math.abs(x)<1e-3))?x.toExponential(3).replace("e+","e"):x.toLocaleString("es",{maximumFractionDigits:4});
 $("shape").innerHTML=Object.keys(SH).map(k=>`<option>${k}</option>`).join("");
 $("mat").innerHTML=Object.keys(M).map(k=>`<option>${k}</option>`).join("");
@@ -102,12 +107,12 @@ if(!ok){o.innerHTML="<p>Ingresa todas las medidas (números positivos).</p>";ret
 const cc=s.v(a);
 let h=`<div class="res">Volumen: <b>${fmt(cc)} cm³</b></div><div class="res">Volumen: <b>${fmt(cc/1e6)} m³</b></div>`;
 if($("en").checked){const m=$("mat").value,d=M[m];
-h+=`<h3>Energía para: ${m}</h3><div class="wrap"><table><tr><th>Efecto</th><th>Joules</th><th>Toneladas TNT</th><th>Rango de ataque</th></tr>`;
-d.forEach((e,i)=>{if(e===null){h+=`<tr><td>${MODES[i]}</td><td class="na" colspan="3">No Aplica</td></tr>`;return}
+h+=`<h3>Energía para: ${m}</h3><div class="wrap"><table><tr><th>Efecto</th><th>Joules</th><th>Toneladas TNT</th><th>Nivel de Ataque</th><th>Tier TEW</th></tr>`;
+d.forEach((e,i)=>{if(e===null){h+=`<tr><td>${MODES[i]}</td><td class="na" colspan="4">No Aplica</td></tr>`;return}
 const[lo,hi]=Array.isArray(e)?[e[0]*cc,e[1]*cc]:[e*cc,e*cc];
-const r=lo===hi?rank(lo):(rank(lo)===rank(hi)?rank(lo):rank(lo)+" → "+rank(hi));
+const cmb=f=>f(lo)===f(hi)?f(lo):f(lo)+" → "+f(hi);const r=cmb(rank),tw=cmb(tier);
 const rg=x=>lo===hi?fmt(lo):fmt(lo)+" – "+fmt(hi);
-h+=`<tr><td>${MODES[i]}</td><td>${rg()} J</td><td>${lo===hi?fmt(lo/TNT):fmt(lo/TNT)+" – "+fmt(hi/TNT)}</td><td>${r}</td></tr>`});
+h+=`<tr><td>${MODES[i]}</td><td>${rg()} J</td><td>${lo===hi?fmt(lo/TNT):fmt(lo/TNT)+" – "+fmt(hi/TNT)}</td><td>${r}</td><td>${tw}</td></tr>`});
 h+="</table></div>"}
 o.innerHTML=h;o.scrollIntoView({behavior:"smooth"})};
 </script></body></html>
